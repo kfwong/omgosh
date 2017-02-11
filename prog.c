@@ -24,9 +24,9 @@ int main() {
         char *shell_path = getenv("SHELL_PATH");
 
         if(shell_path){
-            printf("SHELL_PATH value is %s", shell_path);
+            printf("SHELL_PATH value is %s\n", shell_path);
         }else{
-            printf("SHELL_PATH value is UNKNOWN");
+            printf("SHELL_PATH value is UNKNOWN\n");
         }
     }
 
