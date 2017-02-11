@@ -60,14 +60,17 @@ void omgosh_loop() {
             // checking execvp error
             // https://linux.die.net/man/3/explain_execvp
             if(execvp(args[0], args) < 0){
-                fprintf(stderr, "%s\n", "Shell error: No such file or directory");
+                perror("Shell error");
                 exit(EXIT_FAILURE);
+            }else{
+                exit(EXIT_SUCCESS);
             };
 
         } else {
             // parent process
 
             // http://stackoverflow.com/questions/21248840/example-of-waitpid-in-use
+            // wait for all children to terminate
             waitpid(-1, &status, 0);
 
         }
