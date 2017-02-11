@@ -47,11 +47,15 @@ void omgosh_loop() {
         // https://linux.die.net/man/2/fork
         if (pid == 0) {
             // child process
+            pid_t child_process_id = getpid();
+            pid_t parent_process_id = getppid();
+
+            printf("Loading new process with id %d\n", child_process_id);
+            printf("Parent pid: %d\n", parent_process_id);
 
             // about the exec() family
             // http://stackoverflow.com/questions/4204915/please-explain-exec-function-and-its-family
             // http://stackoverflow.com/questions/33598869/execve-not-taking-environment-parameters
-
 
             // checking execvp error
             // https://linux.die.net/man/3/explain_execvp
