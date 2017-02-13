@@ -32,7 +32,7 @@ void print_header() {
 void omgosh_loop() {
     char *line;
     char **args;
-    pid_t status;
+    int status;
 
     printf("Starting omgosh Shell...\n");
 
@@ -41,14 +41,14 @@ void omgosh_loop() {
         line = omgosh_read_line();
         args = omgosh_split_line(line);
 
-        pid_t pid = fork();
+        int pid = fork();
 
         // see the return value from fork() to identify between parent and child
         // https://linux.die.net/man/2/fork
         if (pid == 0) {
             // child process
-            pid_t child_process_id = getpid();
-            pid_t parent_process_id = getppid();
+            int child_process_id = getpid();
+            int parent_process_id = getppid();
 
             printf("Loading new process with id %d\n", child_process_id);
             printf("Parent pid: %d\n", parent_process_id);
@@ -93,14 +93,28 @@ void omgosh_loop() {
 }
 
 char *omgosh_read_line() {
-    char *line = NULL;
-    size_t buffer_size = 0;
+    const int BUFFER_SIZE = 1024;
+    char line[BUFFER_SIZE];
 
-    // info about getline() function
-    // http://c-for-dummies.com/blog/?p=1112
-    getline(&line, &buffer_size, stdin);
+    fgets(line, BUFFER_SIZE, stdin);
 
-    return line;
+    // http://www.java2s.com/Code/C/Console/Usefgetstoreadstringfromstandardinput.htm
+    size_t last_char = strlen(line)-1;
+    if(line[last_char] == '\n'){
+        line[last_char] = '\0';
+    }
+
+    // http://stackoverflow.com/questions/14416759/return-char-string-from-a-function
+    // need to return the char array...
+    // potential memory leak... should caller free the mem?
+    char *pline = (char *) malloc(sizeof(char) * 3);
+
+    int i;
+    for(i=0; i< BUFFER_SIZE; i++){
+        pline[i] = line[i];
+    }
+
+    return pline;
 }
 
 char **omgosh_split_line(char *line) {
@@ -113,7 +127,8 @@ char **omgosh_split_line(char *line) {
     char **tokens = malloc(buffer_size * sizeof(char *));
 
     // http://stackoverflow.com/questions/3889992/how-does-strtok-split-the-string-into-tokens-in-c
-    for (char *token = strtok(line, DELIMITER); token != NULL; token = strtok(NULL, DELIMITER)) {
+    char *token;
+    for (token = strtok(line, DELIMITER); token != NULL; token = strtok(NULL, DELIMITER)) {
         tokens[position] = token;
         position++;
 
