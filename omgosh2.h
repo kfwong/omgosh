@@ -11,6 +11,6 @@ void print_header();
 
 void omgosh_loop();
 
-char *omgosh_read_line();
+void omgosh_read_line(char buffer[]);
 
-char **omgosh_split_line(char *line);
+void omgosh_split_line(char buffer[], char *result[]);

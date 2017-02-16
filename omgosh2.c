@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include "omgosh2.h"
 
+#define BUFFER_SIZE 1024
+
 int main(){
     print_header();
 
@@ -30,16 +32,17 @@ void print_header() {
 }
 
 void omgosh_loop() {
-    char *line;
-    char **args;
     int status;
 
     printf("Starting omgosh Shell...\n");
 
     do {
         printf("> ");
-        line = omgosh_read_line();
-        args = omgosh_split_line(line);
+        char line[BUFFER_SIZE];
+        char *splitted_line[BUFFER_SIZE];
+
+        omgosh_read_line(line);
+        omgosh_split_line(line, splitted_line);
 
         int pid = fork();
 
@@ -65,7 +68,7 @@ void omgosh_loop() {
 
             setenv("SHELL_PATH", cwd, 1);
 
-            if(execvp(args[0], args) < 0){
+            if(execvp(splitted_line[0], splitted_line) < 0){
                 perror("Shell error");
                 exit(EXIT_FAILURE);
             }else{
@@ -92,55 +95,31 @@ void omgosh_loop() {
 
 }
 
-char *omgosh_read_line() {
-    const int BUFFER_SIZE = 1024;
-    char line[BUFFER_SIZE];
+void omgosh_read_line(char buffer[]) {
 
-    fgets(line, BUFFER_SIZE, stdin);
-
-    // http://www.java2s.com/Code/C/Console/Usefgetstoreadstringfromstandardinput.htm
-    size_t last_char = strlen(line)-1;
-    if(line[last_char] == '\n'){
-        line[last_char] = '\0';
-    }
-
-    // http://stackoverflow.com/questions/14416759/return-char-string-from-a-function
-    // need to return the char array...
-    // potential memory leak... should caller free the mem?
-    char *pline = (char *) malloc(sizeof(char) * 3);
-
-    int i;
-    for(i=0; i< BUFFER_SIZE; i++){
-        pline[i] = line[i];
-    }
-
-    return pline;
-}
-
-char **omgosh_split_line(char *line) {
-    // http://stackoverflow.com/questions/26597977/split-string-with-multiple-delimiters-using-strtok-in-c
-    const char DELIMITER[] = " \t\r\n\v\f";
-    const int BUFFER_SIZE_INCREMENT = 64;
-
-    int buffer_size = 64; // initial buffer size
-    int position = 0;
-    char **tokens = malloc(buffer_size * sizeof(char *));
-
-    // http://stackoverflow.com/questions/3889992/how-does-strtok-split-the-string-into-tokens-in-c
-    char *token;
-    for (token = strtok(line, DELIMITER); token != NULL; token = strtok(NULL, DELIMITER)) {
-        tokens[position] = token;
-        position++;
-
-        // exceeded the buffer, need to reallocate memory & increase buffer size
-        if (position >= buffer_size) {
-            buffer_size += BUFFER_SIZE_INCREMENT;
-            tokens = realloc(tokens, buffer_size * sizeof(char *));
+    if(fgets(buffer, BUFFER_SIZE, stdin)){
+        // http://www.java2s.com/Code/C/Console/Usefgetstoreadstringfromstandardinput.htm
+        size_t last_char = strlen(buffer)-1;
+        if(buffer[last_char] == '\n'){
+            buffer[last_char] = '\0';
         }
     }
 
-    // Set the last item to NULL so the code knows when it's reached the end.
-    tokens[position] = NULL;
+}
 
-    return tokens;
+void omgosh_split_line(char buffer[], char *result[]) {
+    // http://stackoverflow.com/questions/26597977/split-string-with-multiple-delimiters-using-strtok-in-c
+    const char DELIMITER[] = " \t\r\n\v\f";
+
+    int position = 0;
+
+    // http://stackoverflow.com/questions/3889992/how-does-strtok-split-the-string-into-tokens-in-c
+    char *token;
+    for (token = strtok(buffer, DELIMITER); token != NULL; token = strtok(NULL, DELIMITER)) {
+        result[position] = token;
+        position++;
+    }
+
+    // Set the last item to NULL so the code knows when it's reached the end.
+    result[position] = NULL;
 }
