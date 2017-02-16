@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <memory.h>
-#include <malloc.h>
 #include <zconf.h>
 #include <wait.h>
 #include <stdlib.h>
