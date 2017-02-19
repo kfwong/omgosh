@@ -1,6 +1,11 @@
-//
-// Created by kfwong on 2/11/17.
-//
+/*
+ * Name: Wong Kang Fei
+ * Matric No: A0138862W
+ *
+ * Name: Chew Xing Kai
+ * Matric No: A0107476B
+ *
+ */
 
 #ifndef OMGOSH_OMGOSH_H
 #define OMGOSH_OMGOSH_H

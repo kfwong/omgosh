@@ -1,3 +1,12 @@
+/*
+ * Name: Wong Kang Fei
+ * Matric No: A0138862W
+ *
+ * Name: Chew Xing Kai
+ * Matric No: A0107476B
+ *
+ */
+
 #include <stdio.h>
 #include <zconf.h>
 #include <wait.h>
